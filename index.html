@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ليلة 11/11 ✨ | مساحة خاصة لـ وزنة</title>
+
+  <!-- Google Font: Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+          },
+          colors: {
+            royalGold: '#fbbf24',
+            softGold: '#fef08a',
+            twilight: '#130b2e',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- GSAP (GreenSock) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- tsParticles -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+  <!-- Tone.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Canvas-Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="font-tajawal antialiased selection:bg-amber-400 selection:text-slate-950">
+
+  <!-- Parallax Background Layer (sky-bg.png) -->
+  <div id="sky-parallax-wrapper">
+    <div id="sky-bg-layer"></div>
+  </div>
+  <div id="sky-vignette"></div>
+
+  <!-- Ambient Floating Golden Dust (tsParticles) -->
+  <div id="tsparticles"></div>
+
+  <!-- Shooting Star / Meteor Layer (Stage 3) -->
+  <canvas id="meteor-canvas"></canvas>
+
+  <!-- Interactive Touch/Mouse Golden Fairy Dust Trail -->
+  <canvas id="fairy-dust-canvas"></canvas>
+
+  <!-- Floating Top Status & Audio Toggle Bar -->
+  <header class="fixed top-0 inset-x-0 z-40 px-4 pt-3 pb-2 flex items-center justify-between pointer-events-none">
+    <div class="pointer-events-auto flex items-center gap-2 px-3.5 py-1.5 rounded-full ghibli-glass text-xs sm:text-sm text-amber-100/90 border border-amber-300/30 shadow-lg">
+      <span class="inline-block w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span>
+      <span class="font-bold tracking-wide">11/11 • مساحة خاصة لـ وزنة ✨</span>
+    </div>
+
+    <button id="audio-toggle-btn" type="button" aria-label="تبديل الموسيقى"
+      class="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full ghibli-glass text-xs sm:text-sm text-amber-200 border border-amber-300/30 hover:border-amber-300 transition">
+      <span id="audio-icon">🎵</span>
+      <span id="audio-label" class="font-medium">صندوق الموسيقى</span>
+    </button>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="relative z-20 w-full min-h-[100dvh] flex flex-col items-center justify-center px-4 pt-16 pb-8 overflow-hidden">
+
+    <!-- ==========================================
+         STAGE 1: THE PLAYFUL EGO-BYPASS GATE
+         (مدخل خفيف الظل بلمسة ليبية دافئة)
+    =========================================== -->
+    <section id="stage-1" class="stage-screen active-stage w-full max-w-md mx-auto flex-col items-center justify-center">
+      <div id="gate-card" class="w-full ghibli-glass rounded-3xl p-6 sm:p-8 text-center relative overflow-hidden">
+        <!-- Decorative Corner Sparkles -->
+        <div class="absolute -top-12 -right-12 w-32 h-32 bg-amber-400/15 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-purple-400/15 rounded-full blur-2xl pointer-events-none"></div>
+
+        <!-- Cute Mascot Image (cute-mascot.png) -->
+        <div id="mascot-container" class="mascot-halo mx-auto mb-5 w-36 h-36 sm:w-40 sm:h-40 rounded-full p-1.5 bg-gradient-to-b from-amber-200/80 via-amber-400/50 to-purple-500/40 shadow-2xl">
+          <img
+            src="./assets/cute-mascot.png"
+            alt="أرنوبة وكتكوتة التاج الذهبي"
+            class="w-full h-full object-cover rounded-full border-2 border-amber-100/80 shadow-inner"
+          />
+        </div>
+
+        <!-- Gate Title -->
+        <h1 class="text-2xl sm:text-3xl font-extrabold gold-gradient-text mb-2.5">
+          بوابة 11/11 الخاصة بيك ✨
+        </h1>
+
+        <!-- Gate Challenge Subtext -->
+        <p id="gate-instruction" class="text-sm sm:text-base text-amber-50/90 leading-relaxed mb-6 font-medium">
+          عشان تفتح البوابة، النظام يبي يتأكد إنك مصحصحة معانا.. اضغطي عالأرقام من 1 لـ 11 بالترتيب
+        </p>
+
+        <!-- Circular Glowing Buttons 1 to 11 -->
+        <div id="numbers-grid" class="flex flex-wrap items-center justify-center gap-3 sm:gap-3.5 my-2">
+          <!-- Populated dynamically 1..11 by script.js -->
+        </div>
+
+        <!-- Hint Status -->
+        <p id="gate-status-hint" class="text-xs text-amber-200/75 mt-4 min-h-[1.25rem]">
+          هيّا نبدوا بـ (1) وبعدها (2)... ✨
+        </p>
+
+        <!-- Twist Modal / Reveal Inside Gate (Hidden until clicking 1 then 2) -->
+        <div id="ego-bypass-modal" class="hidden mt-4 pt-4 border-t border-amber-300/25 flex-col items-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-400/20 border border-amber-300/50 text-2xl mb-3 shadow-inner">
+            👑
+          </div>
+          <p class="text-base sm:text-lg font-bold text-amber-50 leading-relaxed mb-2 px-1">
+            "نبصّر معاك.. عارفك ما تحبيش الكثرة والتعب، وأصلاً البوابة هذه مدايرها ليك إنتِ بالذات، تفتحلك من غير ما تديري أي مجهود يا أرنوبة 👑"
+          </p>
+          <p class="text-xs sm:text-sm text-amber-200/80 mb-5">
+            خذي نفس هادي.. وخشّي شوفي شن دسّيتلك في السماء الليلة.
+          </p>
+          <button
+            id="enter-world-btn"
+            type="button"
+            class="magical-btn w-full py-4 px-6 rounded-2xl text-base sm:text-lg shadow-xl flex items-center justify-center gap-2"
+          >
+            <span>خشّي لعالمك الخاص ✨</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         STAGE 2: THE 11 STARS OF VALIDATION
+         (سماء الـ 11 نجمة - تفاصيل حقيقية بلهجة ليبية راقية)
+    =========================================== -->
+    <section id="stage-2" class="stage-screen w-full max-w-lg mx-auto flex-col items-center justify-between min-h-[82dvh]">
+      <!-- Top Counter & Instruction -->
+      <div class="w-full flex flex-col items-center text-center z-20">
+        <div class="ghibli-glass px-5 py-2 rounded-full border border-amber-300/40 shadow-lg mb-2 flex items-center gap-3">
+          <span class="text-amber-300 text-lg">🌟</span>
+          <span id="star-counter-text" class="text-base sm:text-lg font-extrabold gold-gradient-text tracking-wide">
+            (0 / 11 نجمة مضوية)
+          </span>
+        </div>
+        <p id="constellation-subtitle" class="text-xs sm:text-sm text-amber-100/85 font-medium px-4">
+          كل نجمة في السماء هذه داسّة تفصيلة حقيقية نلاحظ فيها فيك.. المسيهن وحدة وحدة ✨
+        </p>
+      </div>
+
+      <!-- Interactive Night Sky Constellation Area -->
+      <div id="constellation-stage" class="relative w-full h-[46dvh] sm:h-[50dvh] my-1 select-none">
+        <!-- SVG Lines connecting the 11 stars in a magical constellation -->
+        <svg id="constellation-svg" class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="goldLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fef08a" stop-opacity="0.85" />
+              <stop offset="50%" stop-color="#fbbf24" stop-opacity="0.95" />
+              <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.85" />
+            </linearGradient>
+          </defs>
+          <!-- Faint background guide lines -->
+          <g id="constellation-guide-lines" stroke="rgba(254, 240, 138, 0.14)" stroke-width="0.35" stroke-dasharray="1.2 1.2"></g>
+          <!-- Glowing discovered lines -->
+          <g id="constellation-active-lines" stroke="url(#goldLineGrad)" stroke-width="0.65" stroke-linecap="round"></g>
+        </svg>
+
+        <!-- 11 Interactive Stars Container -->
+        <div id="stars-container" class="absolute inset-0 w-full h-full"></div>
+      </div>
+
+      <!-- Message Card & Summon Meteor Button Area -->
+      <div class="w-full z-20 flex flex-col items-center gap-3">
+        <!-- Luxurious Glass Card for the current star message -->
+        <div id="star-message-card" class="w-full ghibli-glass-gold rounded-2xl p-4 sm:p-5 text-center transition-all duration-300 opacity-0 translate-y-3 pointer-events-none">
+          <div class="flex items-center justify-between text-xs text-amber-200/85 mb-2 px-1">
+            <span id="star-card-badge" class="font-bold text-amber-300">✨ النجمة الأولى</span>
+            <span id="star-theme-badge" class="text-[11px] font-bold bg-amber-400/15 text-amber-200 px-2.5 py-0.5 rounded-full border border-amber-300/35">تفصيلة خاصة</span>
+          </div>
+          <p id="star-message-text" class="text-base sm:text-lg font-bold text-amber-50 leading-relaxed">
+            المسي أول نجمة في السماء عشان تبدأ الحكاية...
+          </p>
+        </div>
+
+        <!-- Summon 11/11 Meteor Button (Revealed after all 11 stars are opened) -->
+        <button
+          id="summon-meteor-btn"
+          type="button"
+          class="hidden magical-btn w-full py-4 px-6 rounded-2xl text-base sm:text-lg shadow-2xl items-center justify-center gap-2"
+        >
+          <span>استدعاء شهاب 11/11 🌠</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         STAGE 3: THE SHOOTING STAR WISH
+         (مشهد الشهاب والأمنية - مع احترام الخصوصية النفسية)
+    =========================================== -->
+    <section id="stage-3" class="stage-screen w-full max-w-md mx-auto flex-col items-center justify-center">
+      <!-- Meteor announcement banner while streaking -->
+      <div id="meteor-sky-caption" class="text-center mb-4">
+        <span class="inline-block px-4 py-1.5 rounded-full ghibli-glass text-amber-200 text-xs sm:text-sm font-bold border border-amber-300/40 animate-pulse">
+          🌠 شهاب 11/11 يمرّ في السماء توّا..
+        </span>
+      </div>
+
+      <!-- Glassmorphism Wish Box -->
+      <div id="wish-box-card" class="w-full ghibli-glass-gold rounded-3xl p-6 sm:p-7 text-center relative overflow-hidden opacity-0 translate-y-6">
+        <div class="w-14 h-14 mx-auto mb-3.5 rounded-full bg-amber-400/20 border border-amber-300/60 flex items-center justify-center text-3xl shadow-lg">
+          🌠
+        </div>
+
+        <h2 class="text-xl sm:text-2xl font-extrabold gold-gradient-text leading-snug mb-2">
+          مرّ الشهاب توّا.. شن هي أمنيتك لليلة 11/11؟ 🌠
+        </h2>
+
+        <p class="text-xs sm:text-sm text-amber-100/85 leading-relaxed mb-4">
+          اكتبي الحاجة اللي تتمنيها من قلبك في هالليلة.. وتقدري تختاري تخليها سر بينك وبين السماء، أو تشاركيني بيها لو تحبي ✨
+        </p>
+
+        <div class="relative mb-3.5">
+          <textarea
+            id="wish-input"
+            rows="3"
+            placeholder="اكتبي أمنيتك هنا براحتك..."
+            class="w-full rounded-2xl bg-slate-950/65 border-2 border-amber-300/45 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 text-amber-50 placeholder-amber-200/40 p-3.5 text-sm sm:text-base leading-relaxed resize-none shadow-inner"
+          ></textarea>
+        </div>
+
+        <!-- Psychological Autonomy Toggle: Private vs Shared Wish -->
+        <div class="grid grid-cols-2 gap-2 mb-5 text-xs">
+          <button
+            type="button"
+            id="wish-mode-private"
+            class="wish-privacy-btn active-privacy-mode py-2.5 px-3 rounded-xl border border-amber-300/60 bg-amber-400/20 text-amber-100 font-bold flex items-center justify-center gap-1.5 transition"
+          >
+            <span>🔒</span>
+            <span>سرّية في قلبي</span>
+          </button>
+          <button
+            type="button"
+            id="wish-mode-shared"
+            class="wish-privacy-btn py-2.5 px-3 rounded-xl border border-amber-300/25 bg-slate-950/45 text-amber-200/75 font-medium flex items-center justify-center gap-1.5 transition"
+          >
+            <span>💌</span>
+            <span>نشاركك بيها</span>
+          </button>
+        </div>
+
+        <button
+          id="send-wish-btn"
+          type="button"
+          class="magical-btn w-full py-4 px-6 rounded-2xl text-base sm:text-lg shadow-xl flex items-center justify-center gap-2"
+        >
+          <span>أرسلي الأمنية للسماء ✨</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         STAGE 4: THE SENSORY REWARD & ROYAL COUPON
+         (بطاقة الدلال الملكية - اختيار ذوقها الحقيقي)
+    =========================================== -->
+    <section id="stage-4" class="stage-screen w-full max-w-md mx-auto flex-col items-center justify-center">
+      <div id="royal-coupon-card" class="royal-ticket-card w-full">
+        <!-- Generated Royal Ticket Frame Asset Overlay -->
+        <div class="royal-ticket-bg"></div>
+
+        <div class="royal-ticket-inner p-5 sm:p-6 text-center flex flex-col items-center">
+          <!-- Royal Ticket Banner Preview -->
+          <div class="relative w-full h-32 sm:h-36 rounded-2xl overflow-hidden mb-4 border border-amber-300/60 shadow-xl">
+            <img
+              src="./assets/royal-ticket.png"
+              alt="بطاقة دلال ملكية 11/11"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex flex-col justify-end p-2.5">
+              <span class="text-[11px] font-bold tracking-widest uppercase text-amber-200/90">
+                WAZNA'S ROYAL PASS • 11 / 11
+              </span>
+            </div>
+          </div>
+
+          <!-- Header -->
+          <h2 class="text-2xl sm:text-3xl font-black gold-gradient-text mb-2">
+            بطاقة دلال خاصة بـ وزنة 👑
+          </h2>
+
+          <!-- Body -->
+          <p class="text-xs sm:text-sm text-amber-50/95 leading-relaxed mb-3.5 font-medium">
+            أمنيتك وصلت للسماء.. أمّا عالأرض، فحقّك محفوظ عندي بهدية حقيقية على ذوقك الحلو. اختاري شن خاطرِك فيه توّا:
+          </p>
+
+          <!-- Interactive Treat Selector (Gives her real choice & agency) -->
+          <div id="gift-choices-grid" class="grid grid-cols-3 gap-2 w-full mb-3.5 text-xs">
+            <button type="button" data-gift="شوكولاتة فاخرة على ذوقي 🍫" class="gift-choice-btn active-gift-choice p-2.5 rounded-xl border border-amber-300/75 bg-amber-400/25 text-amber-50 font-bold flex flex-col items-center gap-1 transition">
+              <span class="text-lg">🍫</span>
+              <span>شوكولاتة فاخرة</span>
+            </button>
+            <button type="button" data-gift="تورتة وحلو رايق عالذوق 🎂" class="gift-choice-btn p-2.5 rounded-xl border border-amber-300/30 bg-slate-950/50 text-amber-100/80 font-medium flex flex-col items-center gap-1 transition">
+              <span class="text-lg">🎂</span>
+              <span>تورتة وحلو رايق</span>
+            </button>
+            <button type="button" data-gift="قهوة وقعدة رايقة مع حلو ☕🍰" class="gift-choice-btn p-2.5 rounded-xl border border-amber-300/30 bg-slate-950/50 text-amber-100/80 font-medium flex flex-col items-center gap-1 transition">
+              <span class="text-lg">☕</span>
+              <span>قهوة وحلو رايق</span>
+            </button>
+          </div>
+
+          <!-- Highlight Box -->
+          <div class="w-full rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-400/15 to-amber-500/20 border border-amber-300/65 p-3.5 mb-3.5 shadow-lg">
+            <p class="text-sm sm:text-base font-extrabold text-amber-100 leading-relaxed">
+              ✨ ومعاها: طلب خاص تطلبيه ويتنفّذ لك فوراً من غير نقاش ولا تأجيل.
+            </p>
+          </div>
+
+          <!-- Optional Special Request Note -->
+          <input
+            id="special-request-input"
+            type="text"
+            placeholder="لو عندك طلب خاص في بالك توّا اكتبيه هنا (اختياري)..."
+            class="w-full rounded-xl bg-slate-950/65 border border-amber-300/35 focus:border-amber-300 focus:outline-none text-amber-50 placeholder-amber-200/40 px-3.5 py-2.5 text-xs sm:text-sm mb-3.5"
+          />
+
+          <!-- Saved Wish Preview Pill -->
+          <div id="saved-wish-preview" class="w-full rounded-xl bg-slate-950/60 border border-amber-300/25 px-3.5 py-2 mb-4 text-xs text-amber-200/90">
+            <span class="font-bold text-amber-300">🌠 حالة الأمنية:</span>
+            <span id="saved-wish-text"></span>
+          </div>
+
+          <!-- Interactive Claim Coupon Button -->
+          <button
+            id="claim-coupon-btn"
+            type="button"
+            class="magical-btn w-full py-4 px-6 rounded-2xl text-base sm:text-lg shadow-2xl flex items-center justify-center gap-2"
+          >
+            <span>تفعيل البطاقة واستلام الهدية 🎁</span>
+          </button>
+
+          <!-- Copy / Confirmation Feedback -->
+          <div id="claim-feedback" class="hidden mt-3.5 w-full rounded-xl bg-emerald-950/85 border border-emerald-400/60 p-3 text-xs sm:text-sm text-emerald-100 leading-relaxed">
+            <p class="font-bold text-emerald-300 mb-1">✅ تم تفعيل البطاقة ونسخ رسالتك!</p>
+            <p>أرسليها ليا توّا وخلّي الباقي عليّا يا أرنوبة 👑🍫</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
